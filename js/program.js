@@ -23,12 +23,19 @@ function changeDisplay(id,value) {
     var sel = $("#"+id+"-print");
     sel.text(""+value);
 }
-
+/**
+ * Lock and element
+ * @param name - name of element to lock
+ */
+function lock(name) {
+    var tmp = $("#values :input.check#"+name);
+    tmp.prop('checked', true);
+}
 /**
  * Setup function
  */
 function setup() {
-    var params = new Params(CONFIG.params,changeDisplay);
+    var params = new Params(CONFIG.params,changeDisplay,lock);
     
     var form = $("#values");
     for (var key in params.params) {
@@ -58,7 +65,7 @@ function setup() {
     function reactText(event) {
         var id = event.target.id;
         var val = event.target.value;
-        params.set(id,val,true);
+        params.set(id,val);
         refresh();
     }
     $("#values :input.text").change(reactText);
@@ -69,23 +76,7 @@ function setup() {
         var id = event.target.id;
         var val = event.target.checked;
         //Lock
-        var field = $("#values :input.text#"+id);
-        if (val)
-        {
-            params.params[id].input = true;
-            params.set(id,field.val(),true);
-        } else {
-            params.params[id].input = false;
-            var tmp = field.val();
-            try {
-                if (params.params[id].func !== undefined)
-                    tmp = params.params[id].func(params); 
-            }  catch (err) {
-                if (err.constructor !== NotSetException)
-                    throw err;
-            }
-            params.set(id,tmp,true); 
-        }
+        params.params[id].input = val;
         refresh();
     }
     $("#values :input.check").change(reactCheck);

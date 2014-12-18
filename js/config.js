@@ -247,7 +247,7 @@ var CONFIG = {
         "guess" : undefined,
         "func": function(params) {
                         var tmp = Math.sqrt(params.get("D")*(1+1/12.0*Math.pow(params.get("Il-pp")/params.get("Iout"),2.0)));
-                        return params.get("Vout")*tmp;
+                        return params.get("Iout")*tmp;
                     },
         "value" : undefined,
         "input" : false,
