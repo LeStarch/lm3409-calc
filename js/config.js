@@ -53,7 +53,7 @@ var CONFIG = {
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = 1.24/(5.0*params.get("Rsns")) - params.get("Il-pp")/2;
+                        var tmp = 1.24/(5.0*params.get("Rsns")) - params.get("Il-pp")/2.0;
                         return tmp;
                     },
         "value" : undefined,
@@ -73,14 +73,14 @@ var CONFIG = {
     //Step 1
     "Fsw" :
     {
-        "guess" : 525*Math.pow(10,3),
+        "guess" : (525*Math.pow(10,3)),
         "value": undefined,
         "func" : function(params) {
                       var tmp = (1-params.get("Vout")/(params.get("Sys-eff")*params.get("Vin")))/params.get("Toff");
                       return tmp;
                   },
         "input" : false,
-        "usable" : false,
+        "usable" : true,
         "depends":["Vout","Sys-eff","Vin","Toff"]
     },
     "Coff" :
@@ -97,7 +97,7 @@ var CONFIG = {
         "guess" : undefined,
         "func": function(params) {
                         var top = -1*(1 - params.get("Vout")/(params.get("Sys-eff") * params.get("Vin")));
-                        var bottom = (params.get("Coff")+20*Math.pow(10,-12))*params.get("Fsw")*Math.ln(1-1.24/params.get("Vout"));
+                        var bottom = (params.get("Coff")+20*Math.pow(10,-12))*params.get("Fsw")*Math.log(1-1.24/params.get("Vout"));
                         return top/bottom;
                     },
         "value" : undefined,
@@ -109,7 +109,7 @@ var CONFIG = {
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = (params.get("Coff")+20*Math.pow(10,-12))*params.get("Roff")*Math.ln(1-1.24/params.get("Vout"));
+                        var tmp = -1*(params.get("Coff")+20*Math.pow(10,-12))*params.get("Roff")*Math.log(1-1.24/params.get("Vout"));
                         return tmp;
                     },
         "value" : undefined,
@@ -122,13 +122,13 @@ var CONFIG = {
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = params.get("Vout")*params.get("Toff")/params.get("Lrip");
+                        var tmp = params.get("Vout")*params.get("Toff")/params.get("Il-pp");
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
-        "usable" : false,
-        "depends":["Vout","Toff","Lrip"]
+        "usable" : true,
+        "depends":["Vout","Toff","Il-pp"]
     },
     "Il-pp" :
     {
@@ -314,7 +314,7 @@ var CONFIG = {
     {
         "guess" : 1.1,
         "func": function(params) {
-                        var tmp = params.get("Ruv2")*22*Mapth.pow(10,-6);
+                        var tmp = params.get("Ruv2")*22*Math.pow(10,-6);
                         return tmp;
                     },
         "value" : undefined,
@@ -326,7 +326,7 @@ var CONFIG = {
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = params.get("Vhys")/(22*Mapth.pow(10,-6));
+                        var tmp = params.get("Vhys")/(22*Math.pow(10,-6));
                         return tmp;
                     },
         "value" : undefined,
