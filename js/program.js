@@ -4,14 +4,14 @@ $().ready(setup);
  * @param id - id of parameter field
  * @returns {String}
  */
-function getInput(id,value,en) {
+function getInput(id,value,en,desc) {
     var str = "<tr><td>"+id+"</td><td><input type='text' id='"+id+"' class='text' ";
     if (!en)
         str+="disabled";
     str = str + "></input></td><td><input id='"+id+"' type='checkbox' class='check' ";
     if (!en)
         str+="disabled";
-    str = str+ "></input></td><td><span id='"+id+"-print'>"+value+"</span><td></tr>";
+    str = str+ "></input></td><td><span id='"+id+"-print'>"+value+"</span></td><td>"+desc+"</td</tr>";
     return str;
 }
 /**
@@ -39,7 +39,7 @@ function setup() {
     
     var form = $("#values");
     for (var key in params.params) {
-        form.append(getInput(key,"unset",params.params[key].usable));
+        form.append(getInput(key,"unset",params.params[key].usable,params.params[key].description));
         var tmp = $("#values :input.check#"+key);
         tmp.prop('checked', params.params[key].input);
     }
@@ -77,6 +77,8 @@ function setup() {
         var val = event.target.checked;
         //Lock
         params.params[id].input = val;
+        var txt = $("#values :input.text #"+id);
+        params.set(id,txt.val());
         refresh();
     }
     $("#values :input.check").change(reactCheck);

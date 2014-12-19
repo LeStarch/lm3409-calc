@@ -20,7 +20,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":[]
+        "description":"Voltage in from the input source"
     },
     "Vin-pp" :
     {
@@ -29,27 +29,18 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":[]
+        "description":"Voltage peak-to-peak ripple (10% of Vin)"
     },
-    "Vin-max" :
+    "Vled" :
     {
         "guess" : undefined,
         "func": undefined,
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":[]
+        "description":"Voltage output of circuit"
     },
-    "Vout" :
-    {
-        "guess" : undefined,
-        "func": undefined,
-        "value" : undefined,
-        "input" : false,
-        "usable" : true,
-        "depends":[]
-    },
-    "Iout" :
+    "Iled" :
     {
         "guess" : undefined,
         "func": function(params) {
@@ -59,7 +50,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":["Rsns","Il-pp"]
+        "description":"Current output from system"
     },
     "Sys-eff" :
     {
@@ -68,7 +59,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":[]
+        "description":"System efficiency, suggested to be between 80% and 95%"
     },
     //Step 1
     "Fsw" :
@@ -76,12 +67,12 @@ var CONFIG = {
         "guess" : (525*Math.pow(10,3)),
         "value": undefined,
         "func" : function(params) {
-                      var tmp = (1-params.get("Vout")/(params.get("Sys-eff")*params.get("Vin")))/params.get("Toff");
+                      var tmp = (1-params.get("Vled")/(params.get("Sys-eff")*params.get("Vin")))/params.get("Toff");
                       return tmp;
                   },
         "input" : false,
         "usable" : true,
-        "depends":["Vout","Sys-eff","Vin","Toff"]
+        "description":"System xwitching frequency, affects inductor and P-FET"
     },
     "Coff" :
     {
@@ -90,70 +81,70 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":[]
+        "description":"Toff timing capacitor. *Remember calculation adds 20pF parasitic capacitance."
     },
     "Roff" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var top = -1*(1 - params.get("Vout")/(params.get("Sys-eff") * params.get("Vin")));
-                        var bottom = (params.get("Coff")+20*Math.pow(10,-12))*params.get("Fsw")*Math.log(1-1.24/params.get("Vout"));
+                        var top = -1*(1 - params.get("Vled")/(params.get("Sys-eff") * params.get("Vin")));
+                        var bottom = (params.get("Coff")+20*Math.pow(10,-12))*params.get("Fsw")*Math.log(1-1.24/params.get("Vled"));
                         return top/bottom;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":["Vout","Sys-eff","Vin","Coff","Fsw"]
+        "description":"Toff timing resistance."
     },
     "Toff" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = -1*(params.get("Coff")+20*Math.pow(10,-12))*params.get("Roff")*Math.log(1-1.24/params.get("Vout"));
+                        var tmp = -1*(params.get("Coff")+20*Math.pow(10,-12))*params.get("Roff")*Math.log(1-1.24/params.get("Vled"));
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["Coff","Roff","Vout"]
+        "description":"Off time, roughlty constance based on Roff Coff and Vled"
     },
     //Step 2
     "L1" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = params.get("Vout")*params.get("Toff")/params.get("Il-pp");
+                        var tmp = params.get("Vled")*params.get("Toff")/params.get("Il-pp");
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":["Vout","Toff","Il-pp"]
+        "description":"Inductor inductance"
     },
     "Il-pp" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = params.get("Vout")*params.get("Toff")/params.get("L1");
+                        var tmp = params.get("Vled")*params.get("Toff")/params.get("L1");
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":["Vout","Toff","L1"]
+        "description":"Maximum peak-to-peak current ripple"
     },
     //Step 3
     "Imax" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = params.get("Iout")+params.get("Il-pp")/2.0;
+                        var tmp = params.get("Iled")+params.get("Il-pp")/2.0;
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["Iout","Il-pp"]
+        "description":"Maximum current"
     },
     "Rsns" :
     {
@@ -165,7 +156,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":["Imax"]
+        "description":"Sensing resistance"
     },
     //Step 4: none
     //Step 5
@@ -179,19 +170,19 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["Fsw","Toff"]
+        "description":"On time"
     },
     "Cin-min" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = params.get("Iout")*params.get("Ton")/params.get("Vin-pp");
+                        var tmp = params.get("Iled")*params.get("Ton")/params.get("Vin-pp");
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["Iout","Ton","Vin-pp"]
+        "description":"Minimum input capacitance"
     },
     "Cin" :
     {
@@ -203,56 +194,56 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":["Iout","Ton","Vin-pp"]
+        "description":"Input capacitance (recommended)"
     },
     "Iin-rms" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = params.get("Iout")*params.get("Fsw")*Math.sqrt(params.get("Ton")*params.get("Toff"));
+                        var tmp = params.get("Iled")*params.get("Fsw")*Math.sqrt(params.get("Ton")*params.get("Toff"));
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["Iout","Fsw","Ton","Toff"]
+        "description":"Root-Mean-Square input current"
     },
     //Step 6
     "D" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = params.get("Vout")/(params.get("Vin")*params.get("Sys-eff"));
+                        var tmp = params.get("Vled")/(params.get("Vin")*params.get("Sys-eff"));
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["Vout","Vin","Sys-eff"]
+        "description":"D"
     },
     "It" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = params.get("D")*params.get("Iout");
+                        var tmp = params.get("D")*params.get("Iled");
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["D","Iout"]
+        "description":"It (current through PFET)?? Remember to add 30% to be safe"
     },
     "It-rms" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = Math.sqrt(params.get("D")*(1+1/12.0*Math.pow(params.get("Il-pp")/params.get("Iout"),2.0)));
-                        return params.get("Iout")*tmp;
+                        var tmp = Math.sqrt(params.get("D")*(1+1/12.0*Math.pow(params.get("Il-pp")/params.get("Iled"),2.0)));
+                        return params.get("Iled")*tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["D","Il-pp","Iout"]
+        "description":"Irtms"
     },
     "Rdson" :
     {
@@ -261,7 +252,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":[]
+        "description":"PFET drain-source resistance (when on)"
     },
     "Pt" :
     {
@@ -273,20 +264,20 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["It-rms","Rdson"]
+        "description":"PFET power"
     },
     //Step 7
     "Id" :
     {
         "guess" : undefined,
         "func": function(params) {
-                        var tmp = (1-params.get("D"))*params.get("Iout");
+                        var tmp = (1-params.get("D"))*params.get("Iled");
                         return tmp;
                     },
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["D","Iout"]
+        "description":"Current through diode, add 30%"
     },
     "Vd" :
     {
@@ -295,7 +286,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":[]
+        "description":"Diode reverse voltage"
     },
     "Pd" :
     {
@@ -307,7 +298,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["Id","Vd"]
+        "description":"Diode power rating"
     },
     //Step 8
     "Vhys" :
@@ -320,7 +311,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : false,
-        "depends":["Ruv2"]
+        "description":"Hysterisis voltage"
     },
     "Ruv2" :
     {
@@ -332,7 +323,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":["Vhys"]
+        "description":"Off voltage resistor ladder resistance 2"
     },
     "Ruv1" :
     {
@@ -344,7 +335,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":["Ruv2","Vturn-on"]
+        "description":"Off voltage resistor ladder resistance 1"
     },
     "Vturn-on" :
     {
@@ -356,7 +347,7 @@ var CONFIG = {
         "value" : undefined,
         "input" : false,
         "usable" : true,
-        "depends":["Ruv2","Ruv1"]
+        "description":"Voltage for turn on"
     }
   }
 }

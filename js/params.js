@@ -82,7 +82,7 @@ function Params(prms,chg,lck) {
         function(name,value) {
             //Is it not from a user and a proper value is set, then break
             value = parseFloat(value);
-            if (value == NaN)
+            if (isNaN(value))
                 return;
             _self.params[name].value = value;
         }
